@@ -18,7 +18,6 @@ export default function Home() {
       inventoryList.push({
         name: doc.id,
         ...doc.data(),
-        image: '/new_horse.jpg', // Default image
       });
     });
     setInventory(inventoryList);
@@ -119,7 +118,7 @@ export default function Home() {
         </Button>
         <Box padding={2} sx={{ width: '100%' }} maxHeight ="500px" overflow={"auto"}>
         <Grid container spacing={3} >
-          {inventory.map(({ name, quantity, image }) => (
+          {inventory.map(({ name, quantity }) => (
             <Grid item xs={12} sm={6} md={4} lg={3} key={name}>
               <Box
                 border="1px solid #ccc"
@@ -130,16 +129,9 @@ export default function Home() {
                 alignItems="center"
                 bgcolor="white"
                 p={2}
-              >
-                <Image
-                  src={image}
-                  alt={name}
-                  width={150}
-                  height={150}
-                  style={{ objectFit: 'cover' }}
-                />
-                <Typography variant='h6' mt={1}>{name.charAt(0).toUpperCase() + name.slice(1)}</Typography>
-                <Typography variant='body1'>{quantity}</Typography>
+              > 
+                <Typography variant='h4'>{quantity}</Typography>
+                <Typography variant='h6' mt={1}>{name.charAt(0).toUpperCase() + name.slice(1)}</Typography> 
                 <Stack direction="row" spacing={2} mt={2}>
                   <Button variant="contained" onClick={() => addItem(name)}>Add</Button>
                   <Button variant="contained" onClick={() => removeItem(name)}>Remove</Button>
