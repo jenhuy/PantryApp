@@ -9,6 +9,7 @@ export default function Home() {
   const [inventory, setInventory] = useState([]);
   const [open, setOpen] = useState(false);
   const [itemName, setItemName] = useState('');
+  const [searchQuery, setSearchQuery] = useState('');
 
   const updateInventory = async () => {
     const snapshot = query(collection(firestore, 'inventory'));
@@ -58,6 +59,11 @@ export default function Home() {
     updateInventory();
   }, []);
 
+  // Filtered inventory based on search query
+  const filteredInventory = inventory.filter(({ name }) =>
+    name.toLowerCase().includes(searchQuery.toLowerCase())
+  );
+
   return (
     <Box 
       width="100vw" 
@@ -67,7 +73,6 @@ export default function Home() {
       alignItems="center"
       flexDirection="column"
       gap={2}
-      
       p={2}
     >
       <Modal open={open} onClose={handleClose}>  
@@ -107,18 +112,35 @@ export default function Home() {
         </Box >
       </Modal>
       <Typography variant="h2" textAlign="center" mb={2}>Inventory Items</Typography>
+      
+      <TextField
+        variant="outlined"
+        placeholder="Search items"
+        value={searchQuery}
+        onChange={(e) => setSearchQuery(e.target.value)}
+        sx={{ mb: 2, width: '100%' }}
+      />
   
-      <Box border="1px solid #333" width="100%" p={2} overflow={"hidden"} bgcolor={'#f0f0f0'}>
-        <Stack  spacing={2} direction={"column"} >
-          <Button
-          variant="contained"
-          onClick={() => handleOpen()}
-        >
-          Add New Item
-        </Button>
-        <Box padding={2} sx={{ width: '100%' }} maxHeight ="500px" overflow={"auto"}>
-        <Grid container spacing={3} >
-          {inventory.map(({ name, quantity }) => (
+  <Box 
+  border="1px solid #333" 
+  width="100%" 
+  p={2} 
+  bgcolor={'#f0f0f0'}
+  sx={{ 
+    maxHeight: '500px', 
+    overflowY: 'auto' 
+  }}
+>
+  <Stack spacing={2} direction={"column"}>
+    <Button
+      variant="contained"
+      onClick={() => handleOpen()}
+    >
+      Add New Item
+    </Button>
+      <Box padding={2} sx={{ width: '100%' }}>
+        <Grid container spacing={3}>
+          {filteredInventory.map(({ name, quantity }) => (
             <Grid item xs={12} sm={6} md={4} lg={3} key={name}>
               <Box
                 border="1px solid #ccc"
@@ -129,9 +151,10 @@ export default function Home() {
                 alignItems="center"
                 bgcolor="white"
                 p={2}
-              > 
+                sx={{ height: '100%' }} // Ensure stretch to fill the grid cell
+              >
                 <Typography variant='h4'>{quantity}</Typography>
-                <Typography variant='h6' mt={1}>{name.charAt(0).toUpperCase() + name.slice(1)}</Typography> 
+                <Typography variant='h6' mt={1}>{name.charAt(0).toUpperCase() + name.slice(1)}</Typography>
                 <Stack direction="row" spacing={2} mt={2}>
                   <Button variant="contained" onClick={() => addItem(name)}>Add</Button>
                   <Button variant="contained" onClick={() => removeItem(name)}>Remove</Button>
@@ -140,9 +163,10 @@ export default function Home() {
             </Grid>
           ))}
         </Grid>
-        </Box>
-        </Stack>
       </Box>
+  </Stack>
+</Box>
+
     </Box>
   );
 }
